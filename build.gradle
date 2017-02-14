@@ -30,7 +30,7 @@ repositories {
 }
 
 group 'uk.q3c.rest'
-version = '0.0.0.1'
+version = '0.1.0.2'
 
 ext.baseVersion = '0.0.0.1'
 sourceCompatibility = '1.8'
@@ -53,6 +53,7 @@ dependencies {
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    runtime "org.jetbrains.kotlin:kotlin-runtime:$kotlin_version"
 
     // Logging
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.8'

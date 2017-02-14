@@ -5,6 +5,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import uk.q3c.rest.base.Wiggly;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

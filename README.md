@@ -10,3 +10,5 @@ Based heavily on [this post](http://robferguson.org/2016/12/22/resteasy-embedded
 - [Jetty](http://www.eclipse.org/jetty/) 
 - [Swagger](http://swagger.io/) 
 - [Guice](https://github.com/google/guice)
+- [Gradle](https://gradle.org/) 
+- Gradle [Shadow](https://github.com/johnrengelman/shadow) plugin
