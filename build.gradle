@@ -1,0 +1,119 @@
+buildscript {
+    ext.kotlin_version = '1.0.6'
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.unbroken-dome.test-sets' version '1.2.0'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id 'maven'
+    id 'maven-publish'
+    id 'idea'
+}
+
+testSets {
+    test
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+group 'uk.q3c.rest'
+version = '0.0.0.1'
+
+ext.baseVersion = '0.0.0.1'
+sourceCompatibility = '1.8'
+apply plugin: 'kotlin'
+
+dependencies {
+
+    // Guice
+    compile group: 'com.google.inject', name: 'guice', version: '4.1.0'
+    compile group: 'com.google.inject.extensions', name: 'guice-servlet', version: '4.1.0'
+    compile group: 'com.google.inject.extensions', name: 'guice-multibindings', version: '4.1.0'
+
+    // Json
+    compile group: 'org.jboss.resteasy', name: 'resteasy-jaxrs', version: '3.0.19.Final'
+    compile group: 'org.jboss.resteasy', name: 'resteasy-servlet-initializer', version: '3.0.19.Final'
+    compile(group: 'org.jboss.resteasy', name: 'resteasy-guice', version: '3.0.19.Final') {
+        exclude(module: 'commons-logging')
+    }
+
+    // Kotlin
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    // Logging
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.8'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
+
+    // Swagger
+    compile group: 'io.swagger', name: 'swagger-jaxrs', version: '1.5.10'
+
+    // Web server
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.3.14.v20161028'
+    compile group: 'org.eclipse.jetty', name: 'jetty-util', version: '9.3.14.v20161028'
+
+    // Testing
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testCompile 'cglib:cglib-nodep:3.2.0'
+    testCompile 'org.objenesis:objenesis:2.2'
+}
+
+
+publishing {
+
+    publications {
+
+        mavenStuff(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar {
+                classifier 'sources'
+            }
+
+            artifact javadocJar {
+                classifier 'javadoc'
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'uk.q3c.rest.base.Main'
+        )
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
