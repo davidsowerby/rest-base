@@ -2,7 +2,7 @@ package uk.q3c.rest.base.swagger;
 
 import io.swagger.config.ScannerFactory;
 import io.swagger.jaxrs.config.BeanConfig;
-import uk.q3c.rest.base.resource.MessageResource;
+import uk.q3c.rest.base.resource.SampleResource;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -34,7 +34,7 @@ final class SwaggerServletContextListener implements ServletContextListener {
                 + "Guice packaged in a Fat JAR with an embedded Jetty instance and no web.xml.");
 
         // setScan() must be called last
-        beanConfig.setResourcePackage(MessageResource.class.getPackage().getName());
+        beanConfig.setResourcePackage(SampleResource.class.getPackage().getName());
         beanConfig.setScan(true);
 
         return beanConfig;

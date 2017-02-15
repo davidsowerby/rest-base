@@ -1,7 +1,9 @@
 package uk.q3c.rest.base;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.servlet.GuiceFilter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -11,16 +13,22 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Slf4jLog;
+import org.reflections.Reflections;
+import uk.q3c.rest.base.app.RestApplication;
+import uk.q3c.rest.base.app.SampleRestApplication;
 import uk.q3c.rest.base.guice.EventListenerScanner;
 import uk.q3c.rest.base.guice.HandlerScanner;
 import uk.q3c.rest.base.jetty.JettyModule;
-import uk.q3c.rest.base.resource.ResourceModule;
 import uk.q3c.rest.base.resteasy.RestEasyModule;
 import uk.q3c.rest.base.swagger.SwaggerModule;
 
 import javax.annotation.concurrent.ThreadSafe;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
+@SuppressWarnings({"ThrowCaughtLocally", "OverlyBroadCatchBlock"})
 @ThreadSafe
 public class Main {
 
@@ -43,14 +51,32 @@ public class Main {
 
         try {
             Log.setLog(new Slf4jLog());
+            final Reflections reflections = new Reflections();
+            final Set<Class<? extends RestApplication>> apps = reflections.getSubTypesOf(RestApplication.class);
 
-            final Injector injector = Guice.createInjector(new JettyModule(), new RestEasyModule(APPLICATION_PATH),
-                    new ResourceModule(), new SwaggerModule(APPLICATION_PATH));
+            // Developer has implemented their own
+            if (apps.size() > 1) {
+                apps.remove(SampleRestApplication.class);
+            }
+
+            // We still have more than one after removing SampleApplication
+            if (apps.size() > 1) {
+                throw new RestApplicationException("More than one RestApplication implementation has been defined - there must be only one", null);
+            }
+
+            final RestApplication app = apps.iterator().next().getConstructor().newInstance();
+            Log.getLog().info("Starting RestApplication with implementation {}", app.getClass().getName());
+            final List<Module> appModules = app.modules();
+            final List<Module> baseModules = ImmutableList.of(new JettyModule(), new RestEasyModule(APPLICATION_PATH), new SwaggerModule(APPLICATION_PATH));
+            final List<Module> allModules = new ArrayList<>(baseModules);
+            allModules.addAll(appModules);
+            final Injector injector = Guice.createInjector(allModules);
 
             injector.getInstance(Main.class).run();
 
-        } catch (Throwable t) {
-            t.printStackTrace();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
