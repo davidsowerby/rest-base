@@ -31,7 +31,7 @@ repositories {
 }
 
 group 'uk.q3c.rest'
-version = '0.2.0.4'
+version = '0.2.1.5'
 ext.baseVersion = '0.0.0.1'
 
 // dependency versions
@@ -86,8 +86,8 @@ publishing {
 
     publications {
 
-        mavenStuff(MavenPublication) {
-            from components.java
+        shadow(MavenPublication) {
+            from components.shadow
 
             artifact sourcesJar {
                 classifier 'sources'
@@ -99,6 +99,15 @@ publishing {
         }
     }
 }
+
+//publishing {
+//    publications {
+//        shadow(MavenPublication) {
+//            from components.shadow
+//            artifactId = 'myproject-shadow'
+//        }
+//    }
+//}
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -126,3 +135,8 @@ jar {
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
+
+shadowJar {
+    archiveName = "${project.name}-${version}.jar"
+}
+

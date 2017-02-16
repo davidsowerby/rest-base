@@ -39,7 +39,8 @@ class MainTest extends Specification {
 
     def setupSpec() {
         runnerThread = new Thread(new MainRunner())
-//        runnerThread.start()
+        runnerThread.start()
+        Thread.sleep(6000)
     }
 
     def cleanupSpec() {
@@ -53,7 +54,6 @@ class MainTest extends Specification {
 
     def "sample application runs"() {
         given:
-        String transformerImdbId = "tt0418279";
         final String path = "http://localhost:8080/api/hello/welcome";
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(UriBuilder.fromPath(path));
